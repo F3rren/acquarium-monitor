@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.*;
 import com.acquarium.acquarium.models.Aquarium;
 import com.acquarium.acquarium.models.Parameter;
 import com.acquarium.acquarium.models.ManualParameter;
+import com.acquarium.acquarium.models.TargetParameter;
 import com.acquarium.acquarium.services.AquariumService;
 import com.acquarium.acquarium.services.ParameterService;
 import com.acquarium.acquarium.services.ManualParameterService;
+import com.acquarium.acquarium.services.TargetParameterService;
 
 @RestController
 @RequestMapping("api/aquariums")
@@ -29,6 +31,9 @@ public class AquariumController {
     
     @Autowired
     private ManualParameterService manualParameterService;
+    
+    @Autowired
+    private TargetParameterService targetParameterService;
 
     @GetMapping
     public ResponseEntity<?> getAllAquariums() {
@@ -320,6 +325,70 @@ public class AquariumController {
                 "message", "Errore durante il recupero dello storico: " + e.getMessage()
             );
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    // Endpoint per recuperare parametri target (valori ideali personalizzati)
+    @GetMapping("/{id}/settings/targets")
+    public ResponseEntity<?> getTargetParameters(@PathVariable Long id) {
+        TargetParameter targets = targetParameterService.getTargetParameters(id);
+        
+        if (targets == null) {
+            // Ritorna valori default se non esistono parametri target personalizzati
+            Map<String, Object> defaultTargets = Map.of(
+                "temperature", 25.0,
+                "ph", 8.2,
+                "salinity", 1024.0,
+                "orp", 360.0
+            );
+            
+            Map<String, Object> response = Map.of(
+                "success", true,
+                "message", "Parametri target di default",
+                "data", defaultTargets
+            );
+            
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        
+        Map<String, Object> data = Map.of(
+            "temperature", targets.getTemperature() != null ? targets.getTemperature() : 25.0,
+            "ph", targets.getPh() != null ? targets.getPh() : 8.2,
+            "salinity", targets.getSalinity() != null ? targets.getSalinity() : 1024.0,
+            "orp", targets.getOrp() != null ? targets.getOrp() : 360.0
+        );
+        
+        Map<String, Object> response = Map.of(
+            "success", true,
+            "message", "Parametri target recuperati con successo",
+            "data", data
+        );
+        
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    
+    // Endpoint per salvare/aggiornare parametri target
+    @PostMapping("/{id}/settings/targets")
+    public ResponseEntity<?> saveTargetParameters(
+            @PathVariable Long id,
+            @RequestBody TargetParameter targetParameter) {
+        
+        try {
+            TargetParameter saved = targetParameterService.saveTargetParameters(id, targetParameter);
+            
+            Map<String, Object> response = Map.of(
+                "success", true,
+                "message", "Parametri target salvati con successo",
+                "data", saved
+            );
+            
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, Object> response = Map.of(
+                "success", false,
+                "message", "Errore durante il salvataggio dei parametri target: " + e.getMessage()
+            );
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
