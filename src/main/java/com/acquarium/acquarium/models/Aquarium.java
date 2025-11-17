@@ -35,8 +35,7 @@ public class Aquarium {
     private String imageUrl;
 
     // Costruttore vuoto richiesto da JPA
-    public Aquarium() {
-    }
+    public Aquarium() {}
 
     public Aquarium(int id, String name, int volume, String type, LocalDateTime createdAt, String description, String imageUrl){
         this.id = id;

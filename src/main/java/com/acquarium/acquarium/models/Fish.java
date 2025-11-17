@@ -3,7 +3,7 @@ package com.acquarium.acquarium.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "fish")
+@Table(name = "fishs")
 public class Fish {
 
     @Id
@@ -44,8 +44,7 @@ public class Fish {
     @Column(name = "description", nullable = true)
     private String description;
 
-    public Fish() {
-    }
+    public Fish() {}
 
     public Fish(int id, String commonName, String scientificName, String family, int minTankSize, int maxSize,
             String difficulty, boolean isReefSafe, String temperament, String diet, String imageUrl,

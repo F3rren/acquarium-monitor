@@ -47,8 +47,7 @@ public class Coral {
     @Column(name = "description", nullable = false)
     private String description;
 
-    public Coral() {
-    }
+    public Coral() {}
 
     public Coral(int id, String commonName, String scientificName, String type, int minTankSize, int maxSize,
             String difficulty, String lightRequirement, String flowRequirement, String placement, boolean isAggressive,
