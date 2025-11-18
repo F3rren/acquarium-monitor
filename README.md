@@ -1,4 +1,4 @@
-# Acquarium Monitor
+# Aquarium Monitor
 ![Java](https://img.shields.io/badge/java-21-blue.svg)
 ![Spring Boot](https://img.shields.io/badge/spring--boot-3.1-green.svg)
 ![Status: Stable](https://img.shields.io/badge/status-stable-success.svg)
@@ -7,7 +7,7 @@
 A RESTful backend for aquarium monitoring, providing endpoints to manage tanks, measurements, tasks, and inhabitants. Built with Java 21, Spring Boot, Hibernate, and PostgreSQL.
 
 > **Note:**  
-> This backend is designed specifically for use with [Acquarium Interface](https://github.com/F3rren/acquarium-interface).  
+> This backend is designed specifically for use with [Aquarium Interface](https://github.com/F3rren/Aquarium-interface).  
 > It will not operate as a standalone API for other apps out-of-the-box.
 
 ---
@@ -118,7 +118,7 @@ cd aquarium-monitor
 
 ---
 > **Note:**  
-> This backend is designed specifically for use with [Acquarium Interface](https://github.com/F3rren/acquarium-interface).  
+> This backend is designed specifically for use with [Aquarium Interface](https://github.com/F3rren/Aquarium-interface).  
 > It will not operate as a standalone API for other apps out-of-the-box.
 
 ## License
