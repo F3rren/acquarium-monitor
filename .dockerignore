@@ -1,0 +1,9 @@
+target/
+!target/*.jar
+.mvn/wrapper/
+*.md
+.git
+.gitignore
+*.log
+.vscode/
+config/
