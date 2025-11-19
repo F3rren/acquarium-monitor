@@ -117,10 +117,6 @@ cd aquarium-monitor
 - [ ] Create automated tests for endpoints
 
 ---
-> **Note:**  
-> This backend is designed specifically for use with [Aquarium Interface](https://github.com/F3rren/Aquarium-interface).  
-> It will not operate as a standalone API for other apps out-of-the-box.
-
 ## License
 
 This project is licensed under the MIT License.
