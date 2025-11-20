@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop] 
+  pull_request:
+    branches: [ main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres: 16-alpine
+        env:
+          POSTRGRES_DB: test_db
+          POSTRGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        port:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build and Test
+        run: ./mvnw clean package -DskipTests=false
+
+      - name: Upload coverage
+        run: ./mvnw jacoco:report
+
+# Effetto: Ad ogni push su develop o main, GitHub Actions:
+# 1. Clona il repo
+# 2. Installa Java 21
+# 3. Compila il progetto
+# 4. Esegue i test
+# 5. Se fallisce, notifica l'errore
+# 6. Se passa, il merge è sicuro
+

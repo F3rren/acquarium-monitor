@@ -1,50 +1,35 @@
+#docker-compose.yml – Produzione
 version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
     container_name: acquarium-db
     environment:
-      POSTGRES_DB: aquarium
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - acquarium-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d aquarium"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: acquarium-app
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/aquarium
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: root
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
-      SERVER_PORT: 8080
-    ports:
-      - "8080:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - acquarium-network
-    restart: unless-stopped
-
-volumes:
-  postgres_data:
-    driver: local
-
-networks:
-  acquarium-network:
-    driver: bridge
+app:
+  build: .
+  container_name: acquarium-app
+  depends_on:
+    postgres:
+      condition: service_healthy
+  ports:
+    - "8080:8080"
+  environment:
+    SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+    SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+    SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+    SPRING_PROFILES_ACTIVE: prod
+  volumes:
+    - ./logs:/app/logs
