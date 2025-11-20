@@ -38,6 +38,27 @@ A **RESTful backend** for comprehensive aquarium monitoring—manage tanks, wate
 
 ---
 
+## Documentation & Tooling
+
+- **API Documentation (Swagger/OpenAPI):**  
+  Full REST API documentation, interactive testing and schema available via **Swagger UI**.
+  - Local access (default dev/prod compose): [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+  - OpenAPI spec: `/v3/api-docs` (standard Spring Boot 3+ path)
+
+- **CI/CD Pipeline (GitHub Actions):**  
+  Automated build, test, and artifact generation for every push & pull request.  
+  - [![CI](https://github.com/F3rren/aquarium-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/F3rren/aquarium-monitor/actions/workflows/ci.yml)
+  - All actions are defined in [`./.github/workflows/ci.yml`](./.github/workflows/ci.yml)
+  - Status badges always up to date
+
+- **Dockerized Deployment:**  
+  Run fully containerized for both development and production with Docker Compose.
+  - See [Quick Start](#quick-start) for setup instructions.
+
+---
+
+
+
 ## Architecture, Dockerization & CI/CD
 
 - **Fully dockerized:** 
