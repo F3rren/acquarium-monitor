@@ -39,6 +39,11 @@ jobs:
         run: ./mvnw clean test
         env:
           SPRING_PROFILES_ACTIVE: test
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: aquarium
+          DB_USER: postgres
+          DB_PASSWORD: root
 
       - name: Upload coverage (optional)
         if: success()
