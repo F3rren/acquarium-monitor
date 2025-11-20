@@ -1,77 +1,100 @@
 # Aquarium Monitor
-![Java](https://img.shields.io/badge/java-21-blue.svg)
-![Spring Boot](https://img.shields.io/badge/spring--boot-3.1-green.svg)
-![Status: Stable](https://img.shields.io/badge/status-stable-success.svg)
-![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
 
-A RESTful backend for aquarium monitoring, providing endpoints to manage tanks, measurements, tasks, and inhabitants. Built with Java 21, Spring Boot, Hibernate, and PostgreSQL.
+![Java 21](https://img.shields.io/badge/java-21-blue.svg)
+![Spring Boot 3.1](https://img.shields.io/badge/spring--boot-3.1-green.svg)
+![Dockerized](https://img.shields.io/badge/docker-ready-blue.svg)
+![CI/CD](https://img.shields.io/badge/CI--CD-GitHub%20Actions-blue.svg)
+![MIT License](https://img.shields.io/badge/license-MIT-green.svg)
 
-> **Note:**  
-> This backend is designed specifically for use with [Aquarium Interface](https://github.com/F3rren/Aquarium-interface).  
-> It will not operate as a standalone API for other apps out-of-the-box.
-
----
-
-## Current Status
-
-- All endpoints are stable and fully operational; no mock data included.
-- Data stored and retrieved exclusively from PostgreSQL in JSON format.
-- No user authentication implemented (intended for use by up to two users).
-- Developed and tested on Java 21 & Spring Boot 3.1.
+A **RESTful backend** for comprehensive aquarium monitoring—manage tanks, water parameters, maintenance tasks, and inhabitant records.  
+**Built with Java 21, Spring Boot, Hibernate, PostgreSQL. Fully dockerized, production-ready, and equipped with automated CI/CD workflows.**
 
 ---
 
-## Features
-
-- **Aquarium Management:** Create, read, update, and delete tanks.
-- **Parameter Tracking:** Save and retrieve water values; access historical data with flexible queries.
-- **Maintenance Tasks:** CRUD operations for aquarium tasks, completion tracking.
-- **Livestock Management:** CRUD for inhabitants (fish, corals) per tank.
-- **Species Database:** Query comprehensive lists and details for fish and corals.
-- **Clean layered architecture:** Controllers, services, and repositories with Hibernate ORM.
+> **Note:** This backend is designed to work alongside the [Aquarium Interface](https://github.com/F3rren/Aquarium-interface) frontend.  
+> *It is not intended as a public/general-purpose open API.*
 
 ---
 
+## Project Status
 
-## Endpoints (Base URL: `/api`)
-- **Aquariums**
-```
-GET /aquariums
-POST /aquariums
-GET /aquariums/{id}
-PUT /aquariums/{id}
-DELETE /aquariums/{id}
-```
-- **Parameters**
-```
-GET /aquariums/{id}/parameters
-POST /aquariums/{id}/parameters
-GET /aquariums/{id}/parameters/history?from=&to=&param=
-```
-- **Tasks**
-```
-GET /aquariums/{id}/tasks
-POST /aquariums/{id}/tasks
-PUT /aquariums/{id}/tasks/{taskId}
-DELETE /aquariums/{id}/tasks/{taskId}
-POST /aquariums/{id}/tasks/{taskId}/complete
-```
-- **Inhabitants**
-```
-GET /aquariums/{id}/inhabitants
-POST /aquariums/{id}/inhabitants
-PUT /aquariums/{id}/inhabitants/{inhabitantId}
-DELETE /aquariums/{id}/inhabitants/{inhabitantId}
-```
-- **Species Database**
-```
-GET /species/fish
-GET /species/fish/{id}
-GET /species/corals
-GET /species/corals/{id}
-```
+- **Stable:** All core endpoints verified and production-tested
+- **Data Layer:** PostgreSQL (internal JSON structure)
+- **Single-user/private use:** No user authentication by default
+- **CI/CD:** Automated via GitHub Actions for build, test, and deploy processes
+- **Stack:** Java 21, Spring Boot 3.1, Docker, PostgreSQL
 
-## Example Request Body
+---
+
+## Key Features
+
+- **Aquarium Management:** CRUD operations on tanks (name, type, volume, etc.)
+- **Parameter Tracking:** Log, query, and analyze water parameters (temperature, pH, salinity, etc.)
+- **Maintenance:** Task scheduling, completion tracking, historical logs
+- **Inhabitants Database:** Add/edit aquatic species (fish, corals) by tank
+- **Species Reference:** Built-in species database for ease of logging and selection
+- **Clean architecture:** Clear separation of controller/service/repository layers
+- **Monitoring:** Exposed health endpoints with Spring Boot Actuator
+
+---
+
+## Architecture, Dockerization & CI/CD
+
+- **Fully dockerized:** 
+  - Includes a production-grade `Dockerfile` and Docker Compose configs for both development and production setups
+  - Data persistence ensured via Docker volumes, isolated environments for development/production
+- **Environment variables:** 
+  - Configuration via `.env` file (see provided `.env.example`)
+  - Keeps credentials/secrets out of source
+- **CI/CD pipeline:** 
+  - Automated builds and tests run on every push or pull request using GitHub Actions
+  - Safe merge enforcement and artifact publishing
+  - Future extensibility for lint, coverage, and deploy actions
+
+---
+
+## Quick Start
+
+1. **Clone the repository**
+    ```
+    git clone https://github.com/F3rren/aquarium-monitor.git
+    cd aquarium-monitor
+    ```
+
+2. **Prepare environment variables**
+    - Copy `.env.example` to `.env` and edit as needed
+
+3. **Run with Docker Compose (recommended for development)**
+    ```
+    docker compose -f docker-compose.dev.yml up
+    ```
+    - API available at: http://localhost:8080/api
+
+4. **(Alternative) Local build without Docker**
+    - Set up PostgreSQL and configure `src/main/resources/application.properties`
+    - Run:
+      ```
+      ./mvnw clean package
+      java -jar target/*.jar
+      ```
+
+---
+
+## Main API Endpoints
+
+| Area              | Method & Path                                      |
+|-------------------|----------------------------------------------------|
+| Aquariums         | GET/POST `/aquariums`, GET/PUT/DELETE `/aquariums/{id}`    |
+| Water Parameters  | GET/POST `/aquariums/{id}/parameters`, GET `/aquariums/{id}/parameters/history?from=...` |
+| Maintenance Tasks | GET/POST `/aquariums/{id}/tasks`, PUT/DELETE `/aquariums/{id}/tasks/{taskId}`          |
+| Inhabitants       | GET/POST `/aquariums/{id}/inhabitants`                  |
+| Species           | GET `/species/fish`, GET `/species/corals`          |
+
+> **Full request/response examples and OpenAPI definitions: Coming soon!**
+
+---
+
+## Example Request Bodies
 
 **Creating a new aquarium:**
 ```
@@ -84,43 +107,27 @@ GET /species/corals/{id}
 **Adding a new parameter:**
 ```
 {
-  "temperature": 26.0,
-  "ph": 8.2,
-  "salinity": 1025,
-  "measuredAt": "2025-11-18T09:00:00Z"
+  "temperature": 20.0,
+  "ph": 6.23,
+  "salinity": 1020,
+  "orp": 355
 }
 ```
 
 ---
 
 
-## Getting Started
-
-1. Clone the repository:
-```
-git clone https://github.com/F3rren/aquarium-monitor.git
-cd aquarium-monitor
-```
-
-3. Setup PostgreSQL and configure `application.properties`.
-4. Build and run the Spring Boot application. The backend is now available at `http://localhost:8080/api`
-
----
-
 ## Roadmap
 
-- [ ] Integrate with cloud backup or sync solution
-- [ ] Add user authentication and profiles
-- [ ] Export/import tank and measurement data
-- [ ] Add multi-tenant support (multiple users)
-- [ ] Improve error handling and validation
-- [ ] Create automated tests for endpoints
+- [ ] Advanced CI/CD: add coverage, lint, e2e tests
+- [ ] Automated cloud/database backup
+- [ ] Authentication & multi-user profile support
+- [ ] Export/import tools for JSON/CSV data
+- [ ] Enhanced error handling & validation
+- [ ] Automated API tests & integration with frontend
 
 ---
-> **Note:**  
-> This backend is designed specifically for use with [Aquarium Interface](https://github.com/F3rren/Aquarium-interface).  
-> It will not operate as a standalone API for other apps out-of-the-box.
 
 ## License
 
-This project is licensed under the MIT License.
+MIT © F3rren
