@@ -3,13 +3,12 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: acquarium-db
+    container_name: aquarium
     environment:
+      SPRING_DATASOURCE_URL: ${POSTGRES_DB_URL}/${POSTGRES_DB}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -18,18 +17,18 @@ services:
       timeout: 5s
       retries: 5
 
-app:
-  build: .
-  container_name: acquarium-app
-  depends_on:
-    postgres:
-      condition: service_healthy
-  ports:
-    - "8080:8080"
-  environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
-    SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-    SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-    SPRING_PROFILES_ACTIVE: prod
-  volumes:
-    - ./logs:/app/logs
+  app:
+    build: .
+    container_name: aquarium-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: ${POSTGRES_DB_URL}/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_PROFILES_ACTIVE: prod
+    volumes:
+      - ./logs:/app/logs

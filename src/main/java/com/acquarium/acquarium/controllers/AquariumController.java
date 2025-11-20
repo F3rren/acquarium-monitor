@@ -69,32 +69,21 @@ public class AquariumController {
     @PostMapping("/{id}/parameters")
     @Operation(summary = "Add parameters for a specific aquarium", description = "Receive and save sensor data for a specific aquarium")
     public ResponseEntity<?> addParameters(@PathVariable Long id, @RequestBody Parameter parameter) {
-        try {
-            Parameter saved = parameterService.saveParameter(id, parameter);
-            
-            Map<String, Object> response = Map.of(
-                "success", true,
-                "message", "Parametri salvati con successo",
-                "data", saved
-            );
-            
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (Exception e) {
-            Map<String, Object> response = Map.of(
-                "success", false,
-                "message", "Errore durante il salvataggio dei parametri: " + e.getMessage()
-            );
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Parameter saved = parameterService.saveParameter(id, parameter);
+        
+        Map<String, Object> response = Map.of(
+            "success", true,
+            "message", "Parametri salvati con successo",
+            "data", saved
+        );
+        
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}/parameters")
     @Operation(summary = "Get parameters for a specific aquarium", description = "Retrieve sensor data for a specific aquarium with optional limit and period filters")
-    public ResponseEntity<?> getAquariumParameters(
-            @PathVariable Long id,
-            @RequestParam(required = false, defaultValue = "10") Integer limit,
-            @RequestParam(required = false) String period // "day", "week", "month"
-    ) {
+    public ResponseEntity<?> getAquariumParameters(@PathVariable Long id, @RequestParam(required = false, defaultValue = "10") Integer limit, @RequestParam(required = false) String period) {
+        
         List<Parameter> parameters;
         
         if (period != null) {
@@ -120,14 +109,6 @@ public class AquariumController {
     @Operation(summary = "Get latest parameters for a specific aquarium", description = "Retrieve the most recent sensor data for a specific aquarium")
     public ResponseEntity<?> getLatestParameters(@PathVariable Long id) {
         Parameter latest = parameterService.getLatestParameter(id);
-        
-        if (latest == null) {
-            Map<String, Object> response = Map.of(
-                "success", false,
-                "message", "Nessun parametro trovato per questo acquario"
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
         
         Map<String, Object> data = Map.of(
                 "temperature", latest.getTemperature(),
@@ -158,82 +139,73 @@ public class AquariumController {
             @RequestParam(required = false) String to,
             @RequestParam(required = false) String param) {
         
-        try {
-            LocalDateTime fromDate;
-            LocalDateTime toDate;
+        LocalDateTime fromDate;
+        LocalDateTime toDate;
+        
+        // Default: ultima settimana
+        if (from == null || from.isEmpty()) {
+            fromDate = LocalDateTime.now().minusWeeks(1);
+        } else {
+            fromDate = LocalDateTime.parse(from);
+        }
+        
+        if (to == null || to.isEmpty()) {
+            toDate = LocalDateTime.now();
+        } else {
+            toDate = LocalDateTime.parse(to);
+        }
+        
+        List<Parameter> parameters = parameterService.getParametersHistory(id, fromDate, toDate);
+        
+        // Se è specificato un parametro, filtra solo quel valore
+        if (param != null && !param.isEmpty()) {
+            List<Map<String, Object>> filtered = parameters.stream()
+                .map(p -> {
+                    Object value = switch(param.toLowerCase()) {
+                        case "temperature" -> p.getTemperature();
+                        case "ph" -> p.getPh();
+                        case "salinity" -> p.getSalinity();
+                        case "orp" -> p.getOrp();
+                        default -> null;
+                    };
+                    
+                    return Map.of(
+                        "timestamp", p.getMeasuredAt(),
+                        "value", value != null ? value : 0
+                    );
+                })
+                .collect(Collectors.toList());
             
-            // Default: ultima settimana
-            if (from == null || from.isEmpty()) {
-                fromDate = LocalDateTime.now().minusWeeks(1);
-            } else {
-                fromDate = LocalDateTime.parse(from);
-            }
-            
-            if (to == null || to.isEmpty()) {
-                toDate = LocalDateTime.now();
-            } else {
-                toDate = LocalDateTime.parse(to);
-            }
-            
-            List<Parameter> parameters = parameterService.getParametersHistory(id, fromDate, toDate);
-            
-            // Se è specificato un parametro, filtra solo quel valore
-            if (param != null && !param.isEmpty()) {
-                List<Map<String, Object>> filtered = parameters.stream()
-                    .map(p -> {
-                        Object value = switch(param.toLowerCase()) {
-                            case "temperature" -> p.getTemperature();
-                            case "ph" -> p.getPh();
-                            case "salinity" -> p.getSalinity();
-                            case "orp" -> p.getOrp();
-                            default -> null;
-                        };
-                        
-                        return Map.of(
-                            "timestamp", p.getMeasuredAt(),
-                            "value", value != null ? value : 0
-                        );
-                    })
-                    .collect(Collectors.toList());
-                
-                Map<String, Object> response = Map.of(
-                    "success", true,
-                    "message", "Storico parametro recuperato con successo",
-                    "data", filtered,
-                    "metadata", Map.of(
-                        "aquariumId", id,
-                        "parameter", param,
-                        "from", fromDate,
-                        "to", toDate,
-                        "count", filtered.size()
-                    )
-                );
-                
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            }
-            
-            // Altrimenti ritorna tutti i parametri
             Map<String, Object> response = Map.of(
                 "success", true,
-                "message", "Storico parametri recuperato con successo",
-                "data", parameters,
+                "message", "Storico parametro recuperato con successo",
+                "data", filtered,
                 "metadata", Map.of(
                     "aquariumId", id,
+                    "parameter", param,
                     "from", fromDate,
                     "to", toDate,
-                    "count", parameters.size()
+                    "count", filtered.size()
                 )
             );
             
             return new ResponseEntity<>(response, HttpStatus.OK);
-            
-        } catch (Exception e) {
-            Map<String, Object> response = Map.of(
-                "success", false,
-                "message", "Errore durante il recupero dello storico: " + e.getMessage()
-            );
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+        
+        // Altrimenti ritorna tutti i parametri
+        Map<String, Object> response = Map.of(
+            "success", true,
+            "message", "Storico parametri recuperato con successo",
+            "data", parameters,
+            "metadata", Map.of(
+                "aquariumId", id,
+                "from", fromDate,
+                "to", toDate,
+                "count", parameters.size()
+            )
+        );
+        
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
     // Endpoint per salvare parametri manuali
@@ -243,23 +215,15 @@ public class AquariumController {
             @PathVariable Long id,
             @RequestBody ManualParameter manualParameter) {
         
-        try {
-            ManualParameter saved = manualParameterService.saveManualParameter(id, manualParameter);
-            
-            Map<String, Object> response = Map.of(
-                "success", true,
-                "message", "Parametri manuali salvati con successo",
-                "data", saved
-            );
-            
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (Exception e) {
-            Map<String, Object> response = Map.of(
-                "success", false,
-                "message", "Errore durante il salvataggio dei parametri manuali: " + e.getMessage()
-            );
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        ManualParameter saved = manualParameterService.saveManualParameter(id, manualParameter);
+        
+        Map<String, Object> response = Map.of(
+            "success", true,
+            "message", "Parametri manuali salvati con successo",
+            "data", saved
+        );
+        
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
     
     // Endpoint per recuperare ultimi parametri manuali
@@ -267,14 +231,6 @@ public class AquariumController {
     @Operation(summary = "Get latest manual parameters for a specific aquarium", description = "Retrieve the most recent manual parameter data for a specific aquarium")
     public ResponseEntity<?> getLatestManualParameters(@PathVariable Long id) {
         ManualParameter latest = manualParameterService.getLatestManualParameter(id);
-        
-        if (latest == null) {
-            Map<String, Object> response = Map.of(
-                "success", false,
-                "message", "Nessun parametro manuale trovato per questo acquario"
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
         
         Map<String, Object> data = Map.of(
             "calcium", latest.getCalcium() != null ? latest.getCalcium() : 0,
@@ -309,36 +265,27 @@ public class AquariumController {
             @RequestParam(required = false) String from,
             @RequestParam(required = false) String to) {
         
-        try {
-            List<ManualParameter> parameters;
-            
-            if (from != null && to != null) {
-                LocalDateTime fromDate = LocalDateTime.parse(from);
-                LocalDateTime toDate = LocalDateTime.parse(to);
-                parameters = manualParameterService.getManualParametersHistory(id, fromDate, toDate);
-            } else {
-                parameters = manualParameterService.getAllManualParameters(id);
-            }
-            
-            Map<String, Object> response = Map.of(
-                "success", true,
-                "message", "Storico parametri manuali recuperato con successo",
-                "data", parameters,
-                "metadata", Map.of(
-                    "aquariumId", id,
-                    "count", parameters.size()
-                )
-            );
-            
-            return new ResponseEntity<>(response, HttpStatus.OK);
-            
-        } catch (Exception e) {
-            Map<String, Object> response = Map.of(
-                "success", false,
-                "message", "Errore durante il recupero dello storico: " + e.getMessage()
-            );
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        List<ManualParameter> parameters;
+        
+        if (from != null && to != null) {
+            LocalDateTime fromDate = LocalDateTime.parse(from);
+            LocalDateTime toDate = LocalDateTime.parse(to);
+            parameters = manualParameterService.getManualParametersHistory(id, fromDate, toDate);
+        } else {
+            parameters = manualParameterService.getAllManualParameters(id);
         }
+        
+        Map<String, Object> response = Map.of(
+            "success", true,
+            "message", "Storico parametri manuali recuperato con successo",
+            "data", parameters,
+            "metadata", Map.of(
+                "aquariumId", id,
+                "count", parameters.size()
+            )
+        );
+        
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
     // Endpoint per recuperare parametri target (valori ideali personalizzati)
@@ -388,23 +335,15 @@ public class AquariumController {
             @PathVariable Long id,
             @RequestBody TargetParameter targetParameter) {
         
-        try {
-            TargetParameter saved = targetParameterService.saveTargetParameters(id, targetParameter);
-            
-            Map<String, Object> response = Map.of(
-                "success", true,
-                "message", "Parametri target salvati con successo",
-                "data", saved
-            );
-            
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            Map<String, Object> response = Map.of(
-                "success", false,
-                "message", "Errore durante il salvataggio dei parametri target: " + e.getMessage()
-            );
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        TargetParameter saved = targetParameterService.saveTargetParameters(id, targetParameter);
+        
+        Map<String, Object> response = Map.of(
+            "success", true,
+            "message", "Parametri target salvati con successo",
+            "data", saved
+        );
+        
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping
@@ -422,21 +361,14 @@ public class AquariumController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateAquarium(@PathVariable Long id, @RequestBody Aquarium aquarium) {
-        try {
-            Aquarium updatedAquarium = aquariumService.updateAquarium(id, aquarium);
+        Aquarium updatedAquarium = aquariumService.updateAquarium(id, aquarium);
 
-            Map<String, Object> response = Map.of(
-                    "success", true,
-                    "message", "Acquario modificato con successo",
-                    "data", updatedAquarium);
+        Map<String, Object> response = Map.of(
+                "success", true,
+                "message", "Acquario modificato con successo",
+                "data", updatedAquarium);
 
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            Map<String, Object> response = Map.of(
-                    "success", false,
-                    "message", e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

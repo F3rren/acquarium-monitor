@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.acquarium.acquarium.models.Coral;
 import com.acquarium.acquarium.repository.ICoralRepository;
 
+import com.acquarium.acquarium.exceptions.ResourceNotFoundException;
+
 @Service
 public class CoralService {
 
@@ -19,6 +21,7 @@ public class CoralService {
     }
 
     public Coral getCoralById(Long id) {
-        return coralRepository.findById(id.intValue()).orElse(null);
+        return coralRepository.findById(id.intValue())
+            .orElseThrow(() -> new ResourceNotFoundException("Corallo non trovato con ID: " + id));
     }
 }

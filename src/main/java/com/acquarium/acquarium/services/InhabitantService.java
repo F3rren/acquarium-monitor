@@ -9,6 +9,8 @@ import com.acquarium.acquarium.dtos.InhabitantDetailsDTO;
 import com.acquarium.acquarium.models.*;
 import com.acquarium.acquarium.repository.*;
 
+import com.acquarium.acquarium.exceptions.ResourceNotFoundException;
+
 @Service
 public class InhabitantService {
     
@@ -32,20 +34,21 @@ public class InhabitantService {
             dto.setQuantity(relation.getQuantity());
             dto.setAddedDate(relation.getAddedDate());
             
-            if ("fish".equals(relation.getInhabitantType())) {
-                Fish fish = fishService.getFishById(relation.getInhabitantId());
-                if (fish != null) {
+            try {
+                if ("fish".equals(relation.getInhabitantType())) {
+                    Fish fish = fishService.getFishById(relation.getInhabitantId());
                     dto.setCommonName(fish.getCommonName());
                     dto.setScientificName(fish.getScientificName());
                     dto.setDetails(fish);
-                }
-            } else if ("coral".equals(relation.getInhabitantType())) {
-                Coral coral = coralService.getCoralById(relation.getInhabitantId());
-                if (coral != null) {
+                } else if ("coral".equals(relation.getInhabitantType())) {
+                    Coral coral = coralService.getCoralById(relation.getInhabitantId());
                     dto.setCommonName(coral.getCommonName());
                     dto.setScientificName(coral.getScientificName());
                     dto.setDetails(coral);
                 }
+            } catch (ResourceNotFoundException e) {
+                // Se l'abitante non viene trovato (es. cancellato), lo ignoriamo o mettiamo dettagli null
+                // In questo caso lasciamo i dettagli null ma includiamo la relazione
             }
             
             result.add(dto);
@@ -62,15 +65,9 @@ public class InhabitantService {
         
         // Verifica che il pesce o corallo esista
         if ("fish".equals(inhabitant.getInhabitantType())) {
-            Fish fish = fishService.getFishById(inhabitant.getInhabitantId());
-            if (fish == null) {
-                throw new IllegalArgumentException("Pesce con ID " + inhabitant.getInhabitantId() + " non trovato");
-            }
+            fishService.getFishById(inhabitant.getInhabitantId());
         } else if ("coral".equals(inhabitant.getInhabitantType())) {
-            Coral coral = coralService.getCoralById(inhabitant.getInhabitantId());
-            if (coral == null) {
-                throw new IllegalArgumentException("Corallo con ID " + inhabitant.getInhabitantId() + " non trovato");
-            }
+            coralService.getCoralById(inhabitant.getInhabitantId());
         } else {
             throw new IllegalArgumentException("inhabitantType deve essere 'fish' o 'coral'");
         }
@@ -84,6 +81,9 @@ public class InhabitantService {
     }
     
     public void removeInhabitant(Long id) {
+        if (!inhabitantRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Abitante non trovato con ID: " + id);
+        }
         inhabitantRepository.deleteById(id);
     }
 }

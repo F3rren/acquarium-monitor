@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import com.acquarium.acquarium.models.ManualParameter;
 import com.acquarium.acquarium.repository.IManualParameterRepository;
 
+import com.acquarium.acquarium.exceptions.ResourceNotFoundException;
+
 @Service
 public class ManualParameterService {
     
@@ -19,7 +21,11 @@ public class ManualParameterService {
     }
     
     public ManualParameter getLatestManualParameter(Long aquariumId) {
-        return manualParameterRepository.findFirstByAquariumIdOrderByMeasuredAtDesc(aquariumId);
+        ManualParameter parameter = manualParameterRepository.findFirstByAquariumIdOrderByMeasuredAtDesc(aquariumId);
+        if (parameter == null) {
+            throw new ResourceNotFoundException("Nessun parametro manuale trovato per l'acquario con ID: " + aquariumId);
+        }
+        return parameter;
     }
     
     public List<ManualParameter> getAllManualParameters(Long aquariumId) {

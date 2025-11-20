@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.acquarium.acquarium.models.Fish;
 import com.acquarium.acquarium.repository.IFishRepository;
 
+import com.acquarium.acquarium.exceptions.ResourceNotFoundException;
+
 @Service
 public class FishService {
     
@@ -19,6 +21,7 @@ public class FishService {
     }
 
     public Fish getFishById(Long id) {
-        return fishRepository.findById(id.intValue()).orElse(null);
+        return fishRepository.findById(id.intValue())
+            .orElseThrow(() -> new ResourceNotFoundException("Pesce non trovato con ID: " + id));
     }
 }
