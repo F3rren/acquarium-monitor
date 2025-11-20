@@ -19,8 +19,12 @@ import com.acquarium.acquarium.services.ParameterService;
 import com.acquarium.acquarium.services.ManualParameterService;
 import com.acquarium.acquarium.services.TargetParameterService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("api/aquariums")
+@Tag(name = "Aquarium", description = "API for managing aquariums")
 public class AquariumController {
 
     @Autowired
@@ -36,6 +40,7 @@ public class AquariumController {
     private TargetParameterService targetParameterService;
 
     @GetMapping
+    @Operation(summary = "Get all aquariums", description = "Retrieve details of all aquariums")
     public ResponseEntity<?> getAllAquariums() {
         List<Aquarium> aquariums = aquariumService.getAllAquariums();
 
@@ -48,6 +53,7 @@ public class AquariumController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get aquarium by ID", description = "Retrieve details of a specific aquarium")
     public ResponseEntity<?> getAquariumById(@PathVariable Long id) {
         Aquarium aquarium = aquariumService.getAquariumById(id);
 
@@ -61,6 +67,7 @@ public class AquariumController {
     
     // Endpoint per ricevere dati DAI sensori
     @PostMapping("/{id}/parameters")
+    @Operation(summary = "Add parameters for a specific aquarium", description = "Receive and save sensor data for a specific aquarium")
     public ResponseEntity<?> addParameters(@PathVariable Long id, @RequestBody Parameter parameter) {
         try {
             Parameter saved = parameterService.saveParameter(id, parameter);
@@ -82,6 +89,7 @@ public class AquariumController {
     }
 
     @GetMapping("/{id}/parameters")
+    @Operation(summary = "Get parameters for a specific aquarium", description = "Retrieve sensor data for a specific aquarium with optional limit and period filters")
     public ResponseEntity<?> getAquariumParameters(
             @PathVariable Long id,
             @RequestParam(required = false, defaultValue = "10") Integer limit,
@@ -109,6 +117,7 @@ public class AquariumController {
 
     // Endpoint per ultimo valore (utile per dashboard)
     @GetMapping("/{id}/parameters/latest")
+    @Operation(summary = "Get latest parameters for a specific aquarium", description = "Retrieve the most recent sensor data for a specific aquarium")
     public ResponseEntity<?> getLatestParameters(@PathVariable Long id) {
         Parameter latest = parameterService.getLatestParameter(id);
         
@@ -142,6 +151,7 @@ public class AquariumController {
     
     // Endpoint per storico con filtri personalizzati per grafici
     @GetMapping("/{id}/parameters/history")
+    @Operation(summary = "Get parameters history for a specific aquarium", description = "Retrieve historical sensor data for a specific aquarium with optional date range and parameter filters")
     public ResponseEntity<?> getParametersHistory(
             @PathVariable Long id,
             @RequestParam(required = false) String from,
@@ -228,6 +238,7 @@ public class AquariumController {
     
     // Endpoint per salvare parametri manuali
     @PostMapping("/{id}/parameters/manual")
+    @Operation(summary = "Save manual parameters for a specific aquarium", description = "Receive and save manual parameter data for a specific aquarium")
     public ResponseEntity<?> saveManualParameters(
             @PathVariable Long id,
             @RequestBody ManualParameter manualParameter) {
@@ -253,6 +264,7 @@ public class AquariumController {
     
     // Endpoint per recuperare ultimi parametri manuali
     @GetMapping("/{id}/parameters/manual")
+    @Operation(summary = "Get latest manual parameters for a specific aquarium", description = "Retrieve the most recent manual parameter data for a specific aquarium")
     public ResponseEntity<?> getLatestManualParameters(@PathVariable Long id) {
         ManualParameter latest = manualParameterService.getLatestManualParameter(id);
         
@@ -291,6 +303,7 @@ public class AquariumController {
     
     // Endpoint per storico parametri manuali
     @GetMapping("/{id}/parameters/manual/history")
+    @Operation(summary = "Get manual parameters history for a specific aquarium", description = "Retrieve historical manual parameter data for a specific aquarium with optional date range")
     public ResponseEntity<?> getManualParametersHistory(
             @PathVariable Long id,
             @RequestParam(required = false) String from,
@@ -330,6 +343,7 @@ public class AquariumController {
     
     // Endpoint per recuperare parametri target (valori ideali personalizzati)
     @GetMapping("/{id}/settings/targets")
+    @Operation(summary = "Get target parameters for a specific aquarium", description = "Retrieve target parameter settings for a specific aquarium, returning default values if none are set")
     public ResponseEntity<?> getTargetParameters(@PathVariable Long id) {
         TargetParameter targets = targetParameterService.getTargetParameters(id);
         
@@ -369,6 +383,7 @@ public class AquariumController {
     
     // Endpoint per salvare/aggiornare parametri target
     @PostMapping("/{id}/settings/targets")
+    @Operation(summary = "Save target parameters for a specific aquarium", description = "Receive and save target parameter settings for a specific aquarium")
     public ResponseEntity<?> saveTargetParameters(
             @PathVariable Long id,
             @RequestBody TargetParameter targetParameter) {
@@ -393,6 +408,7 @@ public class AquariumController {
     }
 
     @PostMapping
+    @Operation(summary = "Create a new aquarium", description = "Receive and save a new aquarium")
     public ResponseEntity<?> createAquarium(@RequestBody Aquarium aquarium) {
         Aquarium savedAquarium = aquariumService.createAquarium(aquarium);
 
@@ -424,6 +440,7 @@ public class AquariumController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a specific aquarium", description = "Delete a specific aquarium by its ID")
     public ResponseEntity<?> deleteAquarium(@PathVariable Long id) {
         aquariumService.deleteAquarium(id);
 

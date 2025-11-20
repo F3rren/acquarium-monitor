@@ -34,6 +34,11 @@ public class Aquarium {
     @Column(name = "image_url")
     private String imageUrl;
 
+    public Aquarium(String name, int volume) {
+        this.name = name;
+        this.volume = volume;
+    }
+
     // Costruttore vuoto richiesto da JPA
     public Aquarium() {}
 
