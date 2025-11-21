@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.acquarium.acquarium.models.Aquarium;
 import com.acquarium.acquarium.models.Parameter;
 import com.acquarium.acquarium.models.ManualParameter;
@@ -18,7 +17,6 @@ import com.acquarium.acquarium.services.AquariumService;
 import com.acquarium.acquarium.services.ParameterService;
 import com.acquarium.acquarium.services.ManualParameterService;
 import com.acquarium.acquarium.services.TargetParameterService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
