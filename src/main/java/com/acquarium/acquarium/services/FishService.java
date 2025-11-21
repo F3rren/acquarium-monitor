@@ -17,7 +17,7 @@ public class FishService {
     private IFishRepository fishRepository;
     
     public List<Fish> getAllFishs() {
-        return fishRepository.findAll();
+        return fishRepository.findAllSortedByName();
     }
 
     public Fish getFishById(Long id) {

@@ -44,11 +44,14 @@ public class Fish {
     @Column(name = "description", nullable = true)
     private String description;
 
+    @Column(name = "water_type", nullable = true)
+    private String waterType;
+
     public Fish() {}
 
     public Fish(int id, String commonName, String scientificName, String family, int minTankSize, int maxSize,
-            String difficulty, boolean isReefSafe, String temperament, String diet, String imageUrl,
-            String description) {
+            String difficulty, boolean isReefSafe, String temperament, String diet, String imageUrl, String description,
+            String waterType) {
         this.id = id;
         this.commonName = commonName;
         this.scientificName = scientificName;
@@ -61,6 +64,7 @@ public class Fish {
         this.diet = diet;
         this.imageUrl = imageUrl;
         this.description = description;
+        this.waterType = waterType;
     }
 
     public int getId() {
@@ -135,4 +139,13 @@ public class Fish {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public String getWaterType() {
+        return waterType;
+    }
+
+    public void setWaterType(String waterType) {
+        this.waterType = waterType;
+    }
+
 }

@@ -17,7 +17,7 @@ public class CoralService {
     private ICoralRepository coralRepository;
 
     public List<Coral> getAllCorals() {
-        return coralRepository.findAll();
+        return coralRepository.findAllSortedByName();
     }
 
     public Coral getCoralById(Long id) {

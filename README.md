@@ -90,7 +90,21 @@ A **RESTful backend** for comprehensive aquarium monitoring—manage tanks, wate
 | Inhabitants       | GET/POST `/aquariums/{id}/inhabitants`                  |
 | Species           | GET `/species/fish`, GET `/species/corals`          |
 
-> **Full request/response examples and OpenAPI definitions: Coming soon!**
+## API Documentation
+
+[![OpenAPI Spec](https://img.shields.io/badge/OpenAPI-3.0-green)](./docs/openapi.json)
+
+The complete OpenAPI 3.0 specification is in [`./docs/openapi.json`](./docs/openapi.json).  
+- **Live Swagger UI:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+- **Raw OpenAPI JSON:** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+
+Use this file to:
+- Edit or visualize it with [Swagger Editor](https://editor.swagger.io/)
+- Import into Postman/Insomnia for live API testing
+- Generate backend/frontend clients using [OpenAPI Generator](https://openapi-generator.tech/)
+
+**How to update:**  
+After backend changes, go to [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs), save the result as `docs/openapi.json` and commit it to the repository.
 
 ---
 
