@@ -137,8 +137,8 @@ After backend changes, go to [http://localhost:8080/v3/api-docs](http://localhos
 - [ ] Automated cloud/database backup
 - [ ] Authentication & multi-user profile support
 - [ ] Export/import tools for JSON/CSV data
-- [ ] Enhanced error handling & validation
-- [ ] Automated API tests & integration with frontend
+- [X] Enhanced error handling & validation
+- [x] Automated API tests & integration with frontend
 
 ---
 
