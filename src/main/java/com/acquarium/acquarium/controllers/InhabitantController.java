@@ -49,30 +49,16 @@ public class InhabitantController {
             @PathVariable Long id,
             @RequestBody Inhabitant inhabitant) {
         
-        try {
-            inhabitant.setAquariumId(id);
-            Inhabitant saved = inhabitantService.addInhabitant(inhabitant);
-            
-            Map<String, Object> response = Map.of(
-                "success", true,
-                "message", "Abitante aggiunto con successo",
-                "data", saved
-            );
-            
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            Map<String, Object> response = Map.of(
-                "success", false,
-                "message", e.getMessage()
-            );
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            Map<String, Object> response = Map.of(
-                "success", false,
-                "message", "Errore durante l'aggiunta dell'abitante: " + e.getMessage()
-            );
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        inhabitant.setAquariumId(id);
+        Inhabitant saved = inhabitantService.addInhabitant(inhabitant);
+        
+        Map<String, Object> response = Map.of(
+            "success", true,
+            "message", "Abitante aggiunto con successo",
+            "data", saved
+        );
+        
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{aquariumId}/inhabitants/{inhabitantId}")

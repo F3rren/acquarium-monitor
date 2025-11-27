@@ -1,0 +1,743 @@
+{
+  "openapi": "3.0.1",
+  "info": { "title": "OpenAPI definition", "version": "v0" },
+  "servers": [
+    { "url": "http://localhost:8080", "description": "Generated server url" }
+  ],
+  "tags": [{ "name": "Aquarium", "description": "API for managing aquariums" }],
+  "paths": {
+    "/api/aquariums/{id}": {
+      "get": {
+        "tags": ["Aquarium"],
+        "summary": "Get aquarium by ID",
+        "description": "Retrieve details of a specific aquarium",
+        "operationId": "getAquariumById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Aquarium"],
+        "operationId": "updateAquarium",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Aquarium" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Aquarium"],
+        "summary": "Delete a specific aquarium",
+        "description": "Delete a specific aquarium by its ID",
+        "operationId": "deleteAquarium",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/aquariums/{id}/tasks/{taskId}": {
+      "put": {
+        "tags": ["maintenance-task-controller"],
+        "operationId": "updateTask",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MaintenanceTask" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["maintenance-task-controller"],
+        "operationId": "deleteTask",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/aquariums": {
+      "get": {
+        "tags": ["Aquarium"],
+        "summary": "Get all aquariums",
+        "description": "Retrieve details of all aquariums",
+        "operationId": "getAllAquariums",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Aquarium"],
+        "summary": "Create a new aquarium",
+        "description": "Receive and save a new aquarium",
+        "operationId": "createAquarium",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Aquarium" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/aquariums/{id}/tasks": {
+      "get": {
+        "tags": ["maintenance-task-controller"],
+        "operationId": "getAllTasks",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      },
+      "post": {
+        "tags": ["maintenance-task-controller"],
+        "operationId": "createTask",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MaintenanceTask" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/aquariums/{id}/tasks/{taskId}/complete": {
+      "post": {
+        "tags": ["maintenance-task-controller"],
+        "operationId": "completeTask",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/aquariums/{id}/settings/targets": {
+      "get": {
+        "tags": ["Aquarium"],
+        "summary": "Get target parameters for a specific aquarium",
+        "description": "Retrieve target parameter settings for a specific aquarium, returning default values if none are set",
+        "operationId": "getTargetParameters",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Aquarium"],
+        "summary": "Save target parameters for a specific aquarium",
+        "description": "Receive and save target parameter settings for a specific aquarium",
+        "operationId": "saveTargetParameters",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TargetParameter" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/aquariums/{id}/parameters": {
+      "get": {
+        "tags": ["Aquarium"],
+        "summary": "Get parameters for a specific aquarium",
+        "description": "Retrieve sensor data for a specific aquarium with optional limit and period filters",
+        "operationId": "getAquariumParameters",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "default": 10 }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Aquarium"],
+        "summary": "Add parameters for a specific aquarium",
+        "description": "Receive and save sensor data for a specific aquarium",
+        "operationId": "addParameters",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Parameter" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/aquariums/{id}/parameters/manual": {
+      "get": {
+        "tags": ["Aquarium"],
+        "summary": "Get latest manual parameters for a specific aquarium",
+        "description": "Retrieve the most recent manual parameter data for a specific aquarium",
+        "operationId": "getLatestManualParameters",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Aquarium"],
+        "summary": "Save manual parameters for a specific aquarium",
+        "description": "Receive and save manual parameter data for a specific aquarium",
+        "operationId": "saveManualParameters",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ManualParameter" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/aquariums/{id}/inhabitants": {
+      "get": {
+        "tags": ["inhabitant-controller"],
+        "operationId": "getAquariumInhabitants",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      },
+      "post": {
+        "tags": ["inhabitant-controller"],
+        "operationId": "addInhabitantToAquarium",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Inhabitant" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/species/fish": {
+      "get": {
+        "tags": ["fish-controller"],
+        "operationId": "getAllFishs",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/species/fish/{id}": {
+      "get": {
+        "tags": ["fish-controller"],
+        "operationId": "getFishById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/species/corals": {
+      "get": {
+        "tags": ["coral-controller"],
+        "operationId": "getAllCorals",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/species/corals/{id}": {
+      "get": {
+        "tags": ["coral-controller"],
+        "operationId": "getCoralById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/aquariums/{id}/parameters/manual/history": {
+      "get": {
+        "tags": ["Aquarium"],
+        "summary": "Get manual parameters history for a specific aquarium",
+        "description": "Retrieve historical manual parameter data for a specific aquarium with optional date range",
+        "operationId": "getManualParametersHistory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/aquariums/{id}/parameters/latest": {
+      "get": {
+        "tags": ["Aquarium"],
+        "summary": "Get latest parameters for a specific aquarium",
+        "description": "Retrieve the most recent sensor data for a specific aquarium",
+        "operationId": "getLatestParameters",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/aquariums/{id}/parameters/history": {
+      "get": {
+        "tags": ["Aquarium"],
+        "summary": "Get parameters history for a specific aquarium",
+        "description": "Retrieve historical sensor data for a specific aquarium with optional date range and parameter filters",
+        "operationId": "getParametersHistory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "param",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/aquariums/{aquariumId}/inhabitants/{inhabitantId}": {
+      "delete": {
+        "tags": ["inhabitant-controller"],
+        "operationId": "removeInhabitantFromAquarium",
+        "parameters": [
+          {
+            "name": "aquariumId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "inhabitantId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Aquarium": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int32" },
+          "name": { "type": "string" },
+          "volume": { "type": "integer", "format": "int32" },
+          "type": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "description": { "type": "string" },
+          "imageUrl": { "type": "string" }
+        }
+      },
+      "MaintenanceTask": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "aquariumId": { "type": "integer", "format": "int64" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "frequency": { "type": "string" },
+          "priority": { "type": "string" },
+          "isCompleted": { "type": "boolean" },
+          "dueDate": { "type": "string", "format": "date-time" },
+          "completedAt": { "type": "string", "format": "date-time" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "notes": { "type": "string" },
+          "status": { "type": "string" },
+          "overdue": { "type": "boolean" }
+        }
+      },
+      "TargetParameter": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "aquariumId": { "type": "integer", "format": "int64" },
+          "temperature": { "type": "number", "format": "double" },
+          "ph": { "type": "number", "format": "double" },
+          "salinity": { "type": "number", "format": "double" },
+          "orp": { "type": "number", "format": "double" }
+        }
+      },
+      "Parameter": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "aquariumId": { "type": "integer", "format": "int64" },
+          "temperature": { "type": "number", "format": "double" },
+          "ph": { "type": "number", "format": "double" },
+          "salinity": { "type": "integer", "format": "int32" },
+          "orp": { "type": "integer", "format": "int32" },
+          "measuredAt": { "type": "string", "format": "date-time" },
+          "salinityStatus": { "type": "string" },
+          "orpStatus": { "type": "string" },
+          "phStatus": { "type": "string" },
+          "temperatureStatus": { "type": "string" },
+          "salinityInRange": { "type": "boolean" },
+          "orpInRange": { "type": "boolean" },
+          "phInRange": { "type": "boolean" },
+          "temperatureInRange": { "type": "boolean" }
+        }
+      },
+      "ManualParameter": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "aquariumId": { "type": "integer", "format": "int64" },
+          "calcium": { "type": "number", "format": "double" },
+          "magnesium": { "type": "number", "format": "double" },
+          "kh": { "type": "number", "format": "double" },
+          "nitrate": { "type": "number", "format": "double" },
+          "phosphate": { "type": "number", "format": "double" },
+          "measuredAt": { "type": "string", "format": "date-time" },
+          "notes": { "type": "string" },
+          "magnesiumStatus": { "type": "string" },
+          "nitrateStatus": { "type": "string" },
+          "khStatus": { "type": "string" },
+          "phosphateStatus": { "type": "string" },
+          "calciumStatus": { "type": "string" },
+          "calciumInRange": { "type": "boolean" },
+          "magnesiumInRange": { "type": "boolean" },
+          "khInRange": { "type": "boolean" },
+          "nitrateInRange": { "type": "boolean" },
+          "phosphateInRange": { "type": "boolean" }
+        }
+      },
+      "Inhabitant": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "aquariumId": { "type": "integer", "format": "int64" },
+          "inhabitantType": { "type": "string" },
+          "inhabitantId": { "type": "integer", "format": "int64" },
+          "quantity": { "type": "integer", "format": "int32" },
+          "addedDate": { "type": "string", "format": "date-time" },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

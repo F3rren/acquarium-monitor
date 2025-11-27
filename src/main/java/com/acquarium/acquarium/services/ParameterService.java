@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import com.acquarium.acquarium.models.Parameter;
 import com.acquarium.acquarium.repository.IParameterRepository;
 
+import com.acquarium.acquarium.exceptions.ResourceNotFoundException;
+
 @Service
 public class ParameterService {
     
@@ -19,17 +21,28 @@ public class ParameterService {
     }
     
     public List<Parameter> getParametersByAquariumId(Long aquariumId, Integer limit) {
+        List<Parameter> parameters;
         if (limit != null && limit <= 50) {
-            return parameterRepository.findByAquariumIdOrderByMeasuredAtDesc(aquariumId)
+            parameters = parameterRepository.findByAquariumIdOrderByMeasuredAtDesc(aquariumId)
                 .stream()
                 .limit(limit)
                 .toList();
+        } else {
+            parameters = parameterRepository.findByAquariumIdOrderByMeasuredAtDesc(aquariumId);
         }
-        return parameterRepository.findByAquariumIdOrderByMeasuredAtDesc(aquariumId);
+        
+        if (parameters.isEmpty()) {
+            throw new ResourceNotFoundException("Nessun parametro trovato per l'acquario con ID: " + aquariumId);
+        }
+        return parameters;
     }
     
     public Parameter getLatestParameter(Long aquariumId) {
-        return parameterRepository.findFirstByAquariumIdOrderByMeasuredAtDesc(aquariumId);
+        Parameter parameter = parameterRepository.findFirstByAquariumIdOrderByMeasuredAtDesc(aquariumId);
+        if (parameter == null) {
+            throw new ResourceNotFoundException("Nessun parametro trovato per l'acquario con ID: " + aquariumId);
+        }
+        return parameter;
     }
     
     public List<Parameter> getParametersByPeriod(Long aquariumId, String period) {

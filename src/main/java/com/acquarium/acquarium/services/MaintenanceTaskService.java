@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.acquarium.acquarium.models.MaintenanceTask;
 import com.acquarium.acquarium.repository.IMaintenanceTaskRepository;
 
+import com.acquarium.acquarium.exceptions.ResourceNotFoundException;
+
 @Service
 public class MaintenanceTaskService {
     
@@ -39,33 +41,32 @@ public class MaintenanceTaskService {
     }
     
     public MaintenanceTask updateTask(Long taskId, MaintenanceTask updatedTask) {
-        Optional<MaintenanceTask> existing = taskRepository.findById(taskId);
-        if (existing.isPresent()) {
-            MaintenanceTask task = existing.get();
-            if (updatedTask.getTitle() != null) task.setTitle(updatedTask.getTitle());
-            if (updatedTask.getDescription() != null) task.setDescription(updatedTask.getDescription());
-            if (updatedTask.getFrequency() != null) task.setFrequency(updatedTask.getFrequency());
-            if (updatedTask.getPriority() != null) task.setPriority(updatedTask.getPriority());
-            if (updatedTask.getDueDate() != null) task.setDueDate(updatedTask.getDueDate());
-            if (updatedTask.getNotes() != null) task.setNotes(updatedTask.getNotes());
-            
-            return taskRepository.save(task);
-        }
-        throw new RuntimeException("Task non trovato con ID: " + taskId);
+        MaintenanceTask task = taskRepository.findById(taskId)
+            .orElseThrow(() -> new ResourceNotFoundException("Task non trovato con ID: " + taskId));
+
+        if (updatedTask.getTitle() != null) task.setTitle(updatedTask.getTitle());
+        if (updatedTask.getDescription() != null) task.setDescription(updatedTask.getDescription());
+        if (updatedTask.getFrequency() != null) task.setFrequency(updatedTask.getFrequency());
+        if (updatedTask.getPriority() != null) task.setPriority(updatedTask.getPriority());
+        if (updatedTask.getDueDate() != null) task.setDueDate(updatedTask.getDueDate());
+        if (updatedTask.getNotes() != null) task.setNotes(updatedTask.getNotes());
+        
+        return taskRepository.save(task);
     }
     
     public MaintenanceTask completeTask(Long taskId) {
-        Optional<MaintenanceTask> existing = taskRepository.findById(taskId);
-        if (existing.isPresent()) {
-            MaintenanceTask task = existing.get();
-            task.setIsCompleted(true);
-            task.setCompletedAt(LocalDateTime.now());
-            return taskRepository.save(task);
-        }
-        throw new RuntimeException("Task non trovato con ID: " + taskId);
+        MaintenanceTask task = taskRepository.findById(taskId)
+            .orElseThrow(() -> new ResourceNotFoundException("Task non trovato con ID: " + taskId));
+
+        task.setIsCompleted(true);
+        task.setCompletedAt(LocalDateTime.now());
+        return taskRepository.save(task);
     }
     
     public void deleteTask(Long taskId) {
+        if (!taskRepository.existsById(taskId)) {
+            throw new ResourceNotFoundException("Task non trovato con ID: " + taskId);
+        }
         taskRepository.deleteById(taskId);
     }
 }

@@ -54,23 +54,15 @@ public class MaintenanceTaskController {
             @PathVariable Long id,
             @RequestBody MaintenanceTask task) {
         
-        try {
-            MaintenanceTask created = taskService.createTask(id, task);
-            
-            Map<String, Object> response = Map.of(
-                "success", true,
-                "message", "Task creato con successo",
-                "data", created
-            );
-            
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (Exception e) {
-            Map<String, Object> response = Map.of(
-                "success", false,
-                "message", "Errore durante la creazione del task: " + e.getMessage()
-            );
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        MaintenanceTask created = taskService.createTask(id, task);
+        
+        Map<String, Object> response = Map.of(
+            "success", true,
+            "message", "Task creato con successo",
+            "data", created
+        );
+        
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
     
     // PUT - Aggiorna un task esistente
@@ -80,29 +72,15 @@ public class MaintenanceTaskController {
             @PathVariable Long taskId,
             @RequestBody MaintenanceTask task) {
         
-        try {
-            MaintenanceTask updated = taskService.updateTask(taskId, task);
-            
-            Map<String, Object> response = Map.of(
-                "success", true,
-                "message", "Task aggiornato con successo",
-                "data", updated
-            );
-            
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            Map<String, Object> response = Map.of(
-                "success", false,
-                "message", e.getMessage()
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            Map<String, Object> response = Map.of(
-                "success", false,
-                "message", "Errore durante l'aggiornamento del task: " + e.getMessage()
-            );
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        MaintenanceTask updated = taskService.updateTask(taskId, task);
+        
+        Map<String, Object> response = Map.of(
+            "success", true,
+            "message", "Task aggiornato con successo",
+            "data", updated
+        );
+        
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
     // DELETE - Elimina un task
@@ -111,22 +89,14 @@ public class MaintenanceTaskController {
             @PathVariable Long id,
             @PathVariable Long taskId) {
         
-        try {
-            taskService.deleteTask(taskId);
-            
-            Map<String, Object> response = Map.of(
-                "success", true,
-                "message", "Task eliminato con successo"
-            );
-            
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            Map<String, Object> response = Map.of(
-                "success", false,
-                "message", "Errore durante l'eliminazione del task: " + e.getMessage()
-            );
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        taskService.deleteTask(taskId);
+        
+        Map<String, Object> response = Map.of(
+            "success", true,
+            "message", "Task eliminato con successo"
+        );
+        
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
     // POST - Marca un task come completato
@@ -135,28 +105,14 @@ public class MaintenanceTaskController {
             @PathVariable Long id,
             @PathVariable Long taskId) {
         
-        try {
-            MaintenanceTask completed = taskService.completeTask(taskId);
-            
-            Map<String, Object> response = Map.of(
-                "success", true,
-                "message", "Task completato con successo",
-                "data", completed
-            );
-            
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            Map<String, Object> response = Map.of(
-                "success", false,
-                "message", e.getMessage()
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            Map<String, Object> response = Map.of(
-                "success", false,
-                "message", "Errore durante il completamento del task: " + e.getMessage()
-            );
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        MaintenanceTask completed = taskService.completeTask(taskId);
+        
+        Map<String, Object> response = Map.of(
+            "success", true,
+            "message", "Task completato con successo",
+            "data", completed
+        );
+        
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
